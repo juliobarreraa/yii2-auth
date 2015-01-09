@@ -38,13 +38,25 @@ class User extends ActiveRecord implements IdentityInterface
 	 */
 	public $password;
 
+	/**
+	 * Nuevo registro
+	 * @var boolean
+	 */
+	public $asNewRecord = false;
+
+	/**
+	 * Rol del usuario
+	 * @var String
+	 */
+	public $roleName;
+
 	private $_isSuperAdmin = null;
 
 	private $statuses = [
-		self::STATUS_DELETED => 'Deleted',
-		self::STATUS_INACTIVE => 'Inactive',
-		self::STATUS_ACTIVE => 'Active',
-		self::STATUS_SUSPENDED => 'Suspended',
+		self::STATUS_DELETED => 'Borrado',
+		self::STATUS_INACTIVE => 'Inactivo',
+		self::STATUS_ACTIVE => 'Activo',
+		self::STATUS_SUSPENDED => 'Suspendido',
 	];
 
 	public function behaviors()
@@ -100,7 +112,7 @@ class User extends ActiveRecord implements IdentityInterface
 	 */
 	public static function findIdentityByAccessToken($token, $type = null)
 	{
-		throw new \yii\base\NotSupportedException('"findIdentityByAccessToken" is not implemented.');
+		throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
 	}
 
 	/**
@@ -176,15 +188,17 @@ class User extends ActiveRecord implements IdentityInterface
 			['status', 'default', 'value' => static::STATUS_ACTIVE, 'on' => 'signup'],
 			['status', 'safe'],
 			['username', 'filter', 'filter' => 'trim'],
-			['username', 'required'],
-			['username', 'unique', 'message' => Yii::t('auth.user', 'This username has already been taken.')],
+			['username', 'required', 'message' => Yii::t('auth.user', '{attribute} no puede esta vacio.')],
+			['username', 'unique', 'message' => Yii::t('auth.user', 'El nombre de usuario ya esta en uso.')],
 			['username', 'string', 'min' => 2, 'max' => 255],
 
 			['email', 'filter', 'filter' => 'trim'],
-			['email', 'required'],
-			['email', 'email'],
-			['email', 'unique', 'message' => Yii::t('auth.user', 'This email address has already been taken.')],
-			['email', 'exist', 'message' => Yii::t('auth.user', 'There is no user with such email.'), 'on' => 'requestPasswordResetToken'],
+			['email', 'required', 'message' => Yii::t('auth.user', '{attribute} no puede esta vacio.')],
+			['email', 'email', 'message' => Yii::t('auth.user', 'La dirección de correo es inválida.')],
+			['email', 'unique', 'message' => Yii::t('auth.user', 'El correo electrónico ya esta siendo usado por otro usuario.')],
+			['email', 'exist', 'message' => Yii::t('auth.user', 'No existe un usuario con este correo asignado.'), 'on' => 'requestPasswordResetToken'],
+			['roleName', 'required'],
+			[['roleName'], 'exist', 'targetClass' => 'app\models\AuthItem', 'targetAttribute' => 'name', 'message' => Yii::t('app', '{attribute} inválido')],
 
 			['password', 'required', 'on' => 'signup'],
 			['password', 'string', 'min' => 6],
@@ -209,17 +223,18 @@ class User extends ActiveRecord implements IdentityInterface
 	{
 		return [
 			'id' => 'ID',
-			'username' => Yii::t('auth.user', 'Username'),
-			'email' => Yii::t('auth.user', 'Email'),
-			'password' => Yii::t('auth.user', 'Password'),
-			'password_hash' => Yii::t('auth.user', 'Password Hash'),
-			'password_reset_token' => Yii::t('auth.user', 'Password Reset Token'),
-			'auth_key' => Yii::t('auth.user', 'Auth Key'),
-			'status' => Yii::t('auth.user', 'Status'),
-			'last_visit_time' => Yii::t('auth.user', 'Last Visit Time'),
-			'create_time' => Yii::t('auth.user', 'Create Time'),
-			'update_time' => Yii::t('auth.user', 'Update Time'),
-			'delete_time' => Yii::t('auth.user', 'Delete Time'),
+			'username' => Yii::t('auth.user', 'Nombre de usuario'),
+			'email' => Yii::t('auth.user', 'Correo'),
+			'password' => Yii::t('auth.user', 'Contraseña'),
+			'password_hash' => Yii::t('auth.user', 'Contraseña cifrada'),
+			'password_reset_token' => Yii::t('auth.user', 'Token'),
+			'auth_key' => Yii::t('auth.user', 'Clave de autenticación'),
+			'status' => Yii::t('auth.user', 'Estado'),
+			'last_visit_time' => Yii::t('auth.user', 'Último login'),
+			'create_time' => Yii::t('auth.user', 'Fecha de Creación'),
+			'update_time' => Yii::t('auth.user', 'Fecha de Actualización'),
+			'delete_time' => Yii::t('auth.user', 'Fecha de Borrado'),
+			'roleName' => 'Permiso'
 		];
 	}
 
@@ -233,6 +248,8 @@ class User extends ActiveRecord implements IdentityInterface
 
 	public function beforeSave($insert)
 	{
+		$this->asNewRecord = $this->isNewRecord;
+
 		if (parent::beforeSave($insert)) {
 			if (($this->isNewRecord || in_array($this->getScenario(), ['resetPassword', 'profile'])) && !empty($this->password)) {
 				$this->password_hash = Yii::$app->getSecurity()->generatePasswordHash($this->password);
@@ -310,4 +327,73 @@ class User extends ActiveRecord implements IdentityInterface
 	{
 		$this->password_reset_token = null;
 	}
+
+    /**
+     * This method is called at the end of inserting or updating a record.
+     * The default implementation will trigger an [[EVENT_AFTER_INSERT]] event when `$insert` is true,
+     * or an [[EVENT_AFTER_UPDATE]] event if `$insert` is false. The event class used is [[AfterSaveEvent]].
+     * When overriding this method, make sure you call the parent implementation so that
+     * the event is triggered.
+     * @param boolean $insert whether this method called while inserting a record.
+     * If false, it means the method is called while updating a record.
+     * @param array $changedAttributes The old values of attributes that had changed and were saved.
+     * You can use this parameter to take action based on the changes made for example send an email
+     * when the password had changed or implement audit trail that tracks all the changes.
+     * `$changedAttributes` gives you the old attribute values while the active record (`$this`) has
+     * already the new, updated values.
+     */
+    public function afterSave($insert, $changedAttributes)
+    {
+    	if ($this->asNewRecord) {
+	    	$auth = Yii::$app->authManager;
+
+	    	$role = $auth->getRole($this->roleName);
+
+	    	$auth->assign($role, $this->id);
+	    }
+
+    	return parent::afterSave($insert, $changedAttributes);
+    }
+
+
+    /**
+     * @inheritdoc
+     * @return CommentQuery
+     */
+    public static function find()
+    {
+        return new \app\models\UserQuery(get_called_class());
+    }
+
+
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRoles() {
+        return $this->hasMany( \app\models\AuthAssignment::className(), [ 'user_id' => 'id' ] );
+    }
+
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRole() {
+        return $this->hasOne( \app\models\AuthAssignment::className(), [ 'user_id' => 'id' ] );
+    }
+
+
+
+    /**
+     * This method is called when the AR object is created and populated with the query result.
+     * The default implementation will trigger an [[EVENT_AFTER_FIND]] event.
+     * When overriding this method, make sure you call the parent implementation to ensure the
+     * event is triggered.
+     */
+    public function afterFind()
+    {
+    	$this->roleName = $this->role->item_name;
+
+        return parent::afterFind();
+    }
 }

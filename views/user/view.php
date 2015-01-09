@@ -9,18 +9,18 @@ use yii\widgets\DetailView;
  */
 
 $this->title = $model->username;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('auth.user', 'Users'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('auth.user', 'Usuarios'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="user-view">
 
-	<h1>View User: '<?= Html::encode($this->title) ?>'</h1>
+	<h1>Viendo usuario: '<?= Html::encode($this->title) ?>'</h1>
 
 	<p>
-		<?= Html::a(Yii::t('auth.user', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-		<?php echo Html::a(Yii::t('auth.user', 'Delete'), ['delete', 'id' => $model->id], [
+		<?= Html::a(Yii::t('auth.user', 'Actualizar'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+		<?php echo Html::a(Yii::t('auth.user', 'Borrar'), ['delete', 'id' => $model->id], [
 			'class' => 'btn btn-danger',
-			'data-confirm' => Yii::t('app', 'Are you sure to delete this user?'),
+			'data-confirm' => Yii::t('app', '¿Estás seguro de eliminar este usuario?'),
 			'data-method' => 'post',
 		]); ?>
 	</p>

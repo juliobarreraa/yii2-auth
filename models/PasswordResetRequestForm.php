@@ -23,7 +23,7 @@ class PasswordResetRequestForm extends Model
 			['email', 'exist',
 				'targetClass' => '\auth\models\User',
 				'filter' => ['status' => User::STATUS_ACTIVE],
-				'message' => Yii::t('auth.reset-password', 'There is no user with such email.')
+				'message' => Yii::t('auth.reset-password', 'No existe un usuario con ese correo.')
 			],
 		];
 	}
@@ -61,7 +61,7 @@ class PasswordResetRequestForm extends Model
 	public function attributeLabels()
 	{
 		return [
-			'email' => Yii::t('auth.user', 'Email')
+			'email' => Yii::t('auth.user', 'Correo')
 		];
 	}
 }

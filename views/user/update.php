@@ -7,10 +7,10 @@ use yii\helpers\Html;
  * @var auth\models\User $model
  */
 
-$this->title = Yii::t('auth.user', 'Update User') . ': ' . $model->username;
-$this->params['breadcrumbs'][] = ['label' => 'Users', 'url' => ['index']];
+$this->title = Yii::t('auth.user', 'Actualizar Usuario') . ': ' . $model->username;
+$this->params['breadcrumbs'][] = ['label' => 'Usuarios', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->username, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = Yii::t('auth.user', 'Update');
+$this->params['breadcrumbs'][] = Yii::t('auth.user', 'Actualizar');
 ?>
 <div class="user-update">
 

@@ -3,6 +3,8 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use auth\models\User;
+use yii\helpers\ArrayHelper;
+
 
 /**
  * @var yii\web\View $this
@@ -21,6 +23,8 @@ use auth\models\User;
 
 		<?= $form->field($model, 'password')->passwordInput(['maxlength' => 128]) ?>
 
+		<?= $form->field($model, 'roleName')->dropDownList(ArrayHelper::map(\app\models\AuthItem::find()->andFilterWhere(['type' => 1])->asArray()->all(), 'name', 'name'), ['prompt' => Yii::t('app', 'Seleccione un Rol')]) ?>
+
 	<?=	$form->field($model, 'status')->dropDownList([
 		User::STATUS_INACTIVE => $model->getStatus(User::STATUS_INACTIVE),
 		User::STATUS_ACTIVE => $model->getStatus(User::STATUS_ACTIVE),
@@ -29,7 +33,7 @@ use auth\models\User;
 	]) ?>
 
 	<div class="form-group">
-			<?= Html::submitButton($model->isNewRecord ? Yii::t('auth.user', 'Create') : Yii::t('auth.user', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+			<?= Html::submitButton($model->isNewRecord ? Yii::t('auth.user', 'Create') : Yii::t('auth.user', 'Actualizar'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
 		</div>
 
 	<?php ActiveForm::end(); ?>

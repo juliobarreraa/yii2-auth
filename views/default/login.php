@@ -8,7 +8,7 @@ use yii\captcha\Captcha;
  * @var yii\widgets\ActiveForm $form
  * @var auth\models\LoginForm $model
  */
-$this->title = \Yii::t('auth.user', 'Login');
+$this->title = \Yii::t('auth.user', 'Identificarse');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="site-login center-block col-lg-3 col-md-4 col-sm-6" style="float:none;">
@@ -37,10 +37,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
 	<div class="form-group">
 		<div class="text-center">
-			<?= Html::submitButton(\Yii::t('auth.user', 'Login'), ['class' => 'btn btn-primary btn-lg btn-block']) ?>
+			<?= Html::submitButton(\Yii::t('auth.user', 'Identificarse'), ['class' => 'btn btn-primary btn-lg btn-block']) ?>
 		</div>
 	</div>
 
 	<?php ActiveForm::end(); ?>
-	<p class="text-center"><?= Html::a(\Yii::t('auth.user', 'Forgot password?'), ['default/request-password-reset']) ?></p>
+	<p class="text-center"><?= Html::a(\Yii::t('auth.user', '¿Olvide mi contraseña?'), ['default/request-password-reset']) ?></p>
+
+	<p class="text-center"><?= Html::a(\Yii::t('auth.user', 'Registrarse'), ['default/signup']) ?></p>
 </div>

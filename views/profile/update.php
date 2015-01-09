@@ -10,9 +10,9 @@ use auth\models\User;
  * @var yii\widgets\ActiveForm $form
  */
 
-$this->title = \Yii::t('auth.user', 'Update Profile');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('auth.user', 'Profile'), 'url' => ['view']];
-$this->params['breadcrumbs'][] = Yii::t('auth.user', 'Update');
+$this->title = \Yii::t('auth.user', 'Actualizar Perfil');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('auth.user', 'Perfil'), 'url' => ['view']];
+$this->params['breadcrumbs'][] = Yii::t('auth.user', 'Actualizar');
 ?>
 <?php $form = ActiveForm::begin(); ?>
 <div class="panel panel-primary">
@@ -43,7 +43,7 @@ $this->params['breadcrumbs'][] = Yii::t('auth.user', 'Update');
 
 	</div>
 	<div class="panel-footer">
-		<?= Html::submitButton(Yii::t('auth.user', $model->isNewRecord ? 'Create' : 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+		<?= Html::submitButton(Yii::t('auth.user', $model->isNewRecord ? 'Crear' : 'Actualizar'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
 	</div>
 </div>
 <?php ActiveForm::end(); ?>

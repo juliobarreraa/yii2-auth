@@ -8,7 +8,7 @@ use yii\widgets\DetailView;
  * @var auth\models\User $model
  */
 
-$this->title = \Yii::t('auth.user', 'View Profile');
+$this->title = \Yii::t('auth.user', 'Mi perfil');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="panel panel-primary user-view">

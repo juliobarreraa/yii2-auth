@@ -59,8 +59,6 @@ return [
 		],
 		'user' => [
 			'class' => 'auth\components\User',
-			'identityClass' => 'auth\models\User', // or replace to your custom identityClass
-			'enableAutoLogin' => true,
 		],
 	    ...
 	]
