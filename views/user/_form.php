@@ -17,7 +17,7 @@ use yii\helpers\ArrayHelper;
 
 	<?php $form = ActiveForm::begin(); ?>
 
-		<?= $form->field($model, 'username')->textInput(['maxlength' => 64]) ?>
+		<?= $form->field($model, 'username')->textInput(['maxlength' => 64, 'min' => 3, 'max' => 64]) ?>
 
 		<?= $form->field($model, 'email')->textInput(['maxlength' => 128, 'type' => 'email']) ?>
 
@@ -33,7 +33,7 @@ use yii\helpers\ArrayHelper;
 	]) ?>
 
 	<div class="form-group">
-			<?= Html::submitButton($model->isNewRecord ? Yii::t('auth.user', 'Create') : Yii::t('auth.user', 'Actualizar'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+			<?= Html::submitButton($model->isNewRecord ? Yii::t('auth.user', 'Crear') : Yii::t('auth.user', 'Actualizar'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
 		</div>
 
 	<?php ActiveForm::end(); ?>

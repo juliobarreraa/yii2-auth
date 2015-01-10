@@ -188,20 +188,23 @@ class User extends ActiveRecord implements IdentityInterface
 			['status', 'default', 'value' => static::STATUS_ACTIVE, 'on' => 'signup'],
 			['status', 'safe'],
 			['username', 'filter', 'filter' => 'trim'],
-			['username', 'required', 'message' => Yii::t('auth.user', '{attribute} no puede esta vacio.')],
+			['username', 'required', 'message' => Yii::t('auth.user', '"{attribute}" requerido.')],
 			['username', 'unique', 'message' => Yii::t('auth.user', 'El nombre de usuario ya esta en uso.')],
-			['username', 'string', 'min' => 2, 'max' => 255],
+			[['username'], 'string_max', 'params' => ['min' => 3, 'max' => 100]],
 
 			['email', 'filter', 'filter' => 'trim'],
-			['email', 'required', 'message' => Yii::t('auth.user', '{attribute} no puede esta vacio.')],
+			['email', 'required', 'message' => Yii::t('auth.user', '"{attribute}" requerido.')],
 			['email', 'email', 'message' => Yii::t('auth.user', 'La dirección de correo es inválida.')],
 			['email', 'unique', 'message' => Yii::t('auth.user', 'El correo electrónico ya esta siendo usado por otro usuario.')],
 			['email', 'exist', 'message' => Yii::t('auth.user', 'No existe un usuario con este correo asignado.'), 'on' => 'requestPasswordResetToken'],
-			['roleName', 'required'],
+			
+			['roleName', 'required', 'message' => Yii::t('auth.user', '"{attribute}" requerido.')],
 			[['roleName'], 'exist', 'targetClass' => 'app\models\AuthItem', 'targetAttribute' => 'name', 'message' => Yii::t('app', '{attribute} inválido')],
 
 			['password', 'required', 'on' => 'signup'],
-			['password', 'string', 'min' => 6],
+			[['password'], 'string_max', 'params' => ['min' => 3, 'max' => 100]],
+			['password', 'required', 'message' => Yii::t('auth.user', '"{attribute}" requerido.')],
+
 		];
 	}
 
@@ -265,6 +268,42 @@ class User extends ActiveRecord implements IdentityInterface
 		}
 		return false;
 	}
+
+	 /**
+     * Valida que el campo solo contenga n caracteres como minimo y n 
+     * caracteres como máximo
+     * @param  string $attribute
+     * @param  array $params
+     * @return
+     */
+    public function string_max($attribute, $params) {
+        // Si es nulo entonces no hay limite
+        $min = null;
+        $max = null;
+
+        if (array_key_exists('min', $params)) {
+            $min = intval($params['min']);
+        }
+
+        if (array_key_exists('max', $params)) {
+            $max = intval($params['max']);
+        }
+
+        // Tamaño de la cadena
+        $long = strlen($this->$attribute);
+
+        if ( ($min !== null & $long < $min) ) {
+            $this->addError($attribute, Yii::t('auth.user', '"{attribute}" requiere como
+                minimo {min} caracteres y como máximo {max} caracteres.', ['attribute' => $this->attributeLabels()[$attribute], 'min' => $min, 'max' => $max]));
+            return;
+        }
+
+        if ( ($max !== null & $long > $max) ) {
+            $this->addError($attribute, Yii::t('auth.user', '"{attribute}" requiere como
+                minimo {min} caracteres y como máximo {max} caracteres.', ['attribute' => $this->attributeLabels()[$attribute], 'min' => $min, 'max' => $max]));
+            return;
+        }
+    }
 
 	public function delete()
 	{
