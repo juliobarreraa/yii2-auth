@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
 	<?php //echo $this->render('_search', ['model' => $searchModel]); ?>
 
 	<p>
-		<?= Html::a('<i class="glyphicon glyphicon-plus-sign"></i> ' . Yii::t('auth.user', 'Crear usuario'), ['create'], ['class' => 'btn btn-success']) ?>
+		<?= Html::a('<i class="glyphicon glyphicon-plus-sign"></i> ' . Yii::t('auth.user', 'Dar de alta un usuario'), ['create'], ['class' => 'btn btn-success']) ?>
 	</p>
 
 	<?php echo GridView::widget([
