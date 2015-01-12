@@ -383,7 +383,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function afterSave($insert, $changedAttributes)
     {
-    	if ($this->asNewRecord) {
+    	if ($this->asNewRecord && $this->roleName != null) {
 	    	$auth = Yii::$app->authManager;
 
 	    	$role = $auth->getRole($this->roleName);
