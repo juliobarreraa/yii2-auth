@@ -11,7 +11,8 @@ use yii\captcha\Captcha;
 $this->title = \Yii::t('auth.user', 'Identificarse');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="site-login center-block col-lg-3 col-md-4 col-sm-6" style="float:none;">
+
+<div class="site-login center-block col-lg-5 col-md-4 col-sm-6" style="float:none; margin-top:100px;">
 	<div class="form-signin-heading">
 		<h1><?= Html::encode($this->title) ?></h1>
 	</div>
@@ -24,7 +25,6 @@ $this->params['breadcrumbs'][] = $this->title;
 			'labelOptions' => ['class' => 'col-lg-1 control-label'],
 		],
 	]); ?>
-
 	<?= $form->field($model, 'username', ['options' => ['class' => 'form-group input-group input-group-lg'], 'template' => '<span class="input-group-addon"><i class=" glyphicon glyphicon-user"></i></span>{input}'])->textInput(['placeholder' => $model->getAttributeLabel('username')]) ?>
 
 	<?= $form->field($model, 'password', ['options' => ['class' => 'form-group input-group input-group-lg'], 'template' => '<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>{input}'])->passwordInput(['placeholder' => $model->getAttributeLabel('password')]) ?>
