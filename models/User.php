@@ -431,7 +431,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function afterFind()
     {
-    	$this->roleName = $this->role->item_name;
+    	#$this->roleName = $this->role->item_name;
 
         return parent::afterFind();
     }
