@@ -42,6 +42,11 @@ class User extends BaseUser
 	protected function afterLogin($identity, $cookieBased, $duration)
 	{
 		parent::afterLogin($identity, $cookieBased, $duration);
+
+		if ( ! $this->identity ) {
+			return;
+		}
+		
 		$this->identity->setScenario(self::EVENT_AFTER_LOGIN);
 		$this->identity->setAttribute('last_visit_time', new Expression('CURRENT_TIMESTAMP'));
 		// $this->identity->setAttribute('login_ip', ip2long(\Yii::$app->getRequest()->getUserIP()));
