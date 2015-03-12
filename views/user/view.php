@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="user-view">
 
-	<h1>Viendo usuario: '<?= Html::encode($this->title) ?>'</h1>
+	<h1>Usuario: '<?= Html::encode($this->title) ?>'</h1>
 
 	<p>
 		<?= Html::a(Yii::t('auth.user', 'Actualizar'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
