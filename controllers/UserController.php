@@ -8,6 +8,8 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\models\Students;
+use app\models\Teachers;
 
 /**
  * UserController implements the CRUD actions for User model.
@@ -100,17 +102,44 @@ class UserController extends Controller
 	 * @param integer $id
 	 * @return mixed
 	 */
-	public function actionUpdate($id)
+	public function actionUpdate($id, $role = 'other')
 	{
 		$model = $this->findModel($id);
 		$model->setScenario('profile');
 
-		if ($model->load($_POST) && $model->save()) {
-			return $this->redirect(['view', 'id' => $model->id]);
+		# Validación para obtener el id del alumno
+		if ($role === "student") {
+			
+			$student = Students::find()->where("user_id = :id", [":id" => $id])->one();
+			
+			if ($model->load($_POST) && $model->save()) {
+				return $this->redirect(['/students/view', 'id' => $student->id]);
+			} else {
+				return $this->render('update', [
+					'model' => $model,
+				]);
+			}
+
+		} elseif ($role === "teacher") {
+
+			$teacher = Teachers::find()->where("user_id = :id", [":id" => $id])->one();
+			
+			if ($model->load($_POST) && $model->save()) {
+				return $this->redirect(['/teachers/view', 'id' => $teacher->id]);
+			} else {
+				return $this->render('update', [
+					'model' => $model,
+				]);
+			}			
+
 		} else {
-			return $this->render('update', [
-				'model' => $model,
-			]);
+			if ($model->load($_POST) && $model->save()) {
+				return $this->redirect(['view', 'id' => $model->id]);
+			} else {
+				return $this->render('update', [
+					'model' => $model,
+				]);
+			}
 		}
 	}
 
