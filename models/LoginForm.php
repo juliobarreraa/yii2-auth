@@ -60,19 +60,30 @@ class LoginForm extends Model
 		}
 	}
 
-	/**
-	 * Logs in a user using the provided username and password.
-	 *
-	 * @return boolean whether the user is logged in successfully
-	 */
-	public function login()
-	{
-		if ($this->validate()) {
-			return $this->getUser()->login($this->rememberMe ? Yii::$app->getModule('auth')->rememberMeTime : 0);
-		} else {
-			return false;
-		}
-	}
+    /**
+     * Logs in a user using the provided username and password.
+     *
+     * @return boolean whether the user is logged in successfully
+     */
+    public function login()
+    {
+        global $user, $auth;
+
+        if ($this->validate()) {
+            // Start session management
+            $user->session_begin();
+            $auth->acl($user->data);
+            $user->data['user_lang'] = 'en';
+            $_SERVER['language'] = 'en';
+            $user->setup();
+
+            $result = $auth->login($this->username, $this->password);
+
+            return $this->getUser()->login($this->rememberMe ? Yii::$app->getModule('auth')->rememberMeTime : 0);
+        } else {
+            return false;
+        }
+    }
 
 	/**
 	 * Finds user by [[username]]

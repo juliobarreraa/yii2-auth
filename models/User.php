@@ -197,7 +197,7 @@ class User extends ActiveRecord implements IdentityInterface
 			['email', 'email', 'message' => Yii::t('auth.user', 'La dirección de correo es inválida.')],
 			['email', 'unique', 'message' => Yii::t('auth.user', 'El correo electrónico ya esta siendo usado por otro usuario.')],
 			['email', 'exist', 'message' => Yii::t('auth.user', 'No existe un usuario con este correo asignado.'), 'on' => 'requestPasswordResetToken'],
-			
+
 			['roleName', 'required', 'message' => Yii::t('auth.user', '"{attribute}" requerido.')],
 			[['roleName'], 'exist', 'targetClass' => 'app\models\AuthItem', 'targetAttribute' => 'name', 'message' => Yii::t('app', '{attribute} inválido')],
 
@@ -249,28 +249,62 @@ class User extends ActiveRecord implements IdentityInterface
 		return $this->hasOne(ProfileFieldValue::className(), ['id' => 'user_id']);
 	}
 
-	public function beforeSave($insert)
-	{
-		$this->asNewRecord = $this->isNewRecord;
+    public function beforeValidate()
+    {
+        if (parent::beforeValidate()) {
+            if (Yii::$app->getModule('auth')->signupWithEmailOnly) {
+                $this->username = $this->email;
+            }
 
-		if (parent::beforeSave($insert)) {
-			if (($this->isNewRecord || in_array($this->getScenario(), ['resetPassword', 'profile'])) && !empty($this->password)) {
-				$this->password_hash = Yii::$app->getSecurity()->generatePasswordHash($this->password);
-			}
-			if ($this->isNewRecord) {
-				$this->auth_key = Yii::$app->getSecurity()->generateRandomString();
-			}
-			if ($this->getScenario() !== \yii\web\User::EVENT_AFTER_LOGIN) {
-				$this->setAttribute('update_time', new Expression('CURRENT_TIMESTAMP'));
-			}
+            return true;
+        }
 
-			return true;
-		}
-		return false;
-	}
+        return false;
+    }
+
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            if (($this->isNewRecord || in_array($this->getScenario(), ['resetPassword', 'profile'])) && !empty($this->password)) {
+                $this->password_hash = Yii::$app->getSecurity()->generatePasswordHash($this->password);
+            }
+            if ($this->isNewRecord) {
+                $this->auth_key = Yii::$app->getSecurity()->generateRandomString();
+            }
+            if ($this->getScenario() !== \yii\web\User::EVENT_AFTER_LOGIN) {
+                $this->setAttribute('update_time', new Expression('CURRENT_TIMESTAMP'));
+            }
+
+            if ($this->isNewRecord) {
+                // Creamos el usuario del foro.
+                $user_actkey = md5(rand(0, 100) . time());
+                $user_actkey = substr($user_actkey, 0, rand(8, 12));
+
+                $user_row = array(
+                    'username' => $this->username,
+                    'user_password' => phpbb_hash($this->password),
+                    'user_email' => $this->email,
+                    'group_id' => (int)4,
+                    'user_timezone' => (float)-6,
+                    'user_lang' => 'en',
+                    'user_type' => 0,
+                    'user_actkey' => $user_actkey,
+                    'user_ip' => request_var('REMOTE_ADDR', ''),
+                    'user_regdate' => time(),
+                    'user_dateformat' => 'D M d, Y g:i a'
+                );
+
+                // El identificador nos puede servir para almacenarlo en el oauth del foro
+                $user_id = user_add($user_row);
+            }
+
+            return true;
+        }
+        return false;
+    }
 
 	 /**
-     * Valida que el campo solo contenga n caracteres como minimo y n 
+     * Valida que el campo solo contenga n caracteres como minimo y n
      * caracteres como máximo
      * @param  string $attribute
      * @param  array $params
