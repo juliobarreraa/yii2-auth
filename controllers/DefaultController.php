@@ -2,6 +2,7 @@
 
 namespace auth\controllers;
 
+use app\models\EnabledContents;
 use auth\models\PasswordResetRequestForm;
 use auth\models\ResetPasswordForm;
 use Yii;
@@ -93,6 +94,16 @@ class DefaultController extends Controller
 	public function actionLogout()
 	{
 		Yii::$app->user->logout();
+
+        $model = EnabledContents::findAll(['enabled' => 1]);
+
+        if(is_array($model) && count($model) > 0) {
+            foreach ($model as $element) {
+                $element->setAttribute('enabled', 0);
+                $element->save();
+            }
+        }
+
 		return $this->goHome();
 	}
 

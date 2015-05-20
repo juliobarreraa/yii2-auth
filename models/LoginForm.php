@@ -74,8 +74,11 @@ class LoginForm extends Model
             $user->session_begin();
             $auth->acl($user->data);
             $user->data['user_lang'] = 'en';
+            $user->data['user_style'] = '1';
             $_SERVER['language'] = 'en';
             $user->setup();
+
+            $_SESSION['USERNAME_AUTH'] = $this->username;
 
             $result = $auth->login($this->username, $this->password);
 
